@@ -50,3 +50,6 @@ dart_defines.json
 
 # Claude Code local settings
 .claude/
+
+# Firebase CLI local cache
+.firebase/
