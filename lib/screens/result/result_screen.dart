@@ -9,6 +9,7 @@ import '../../services/result_repository.dart';
 import '../../services/share_service.dart';
 import '../../state/test_session_state.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/responsive.dart';
 import '../../utils/session_id.dart';
 import '../../widgets/premium_banner.dart';
 
@@ -43,6 +44,8 @@ class _ResultScreenState extends State<ResultScreen> {
       sessionId: sessionId,
       session: session,
       resultCode: widget.resultCode,
+      ageGroup: session.ageGroup,
+      gender: session.gender,
     );
   }
 
@@ -94,43 +97,49 @@ class _ResultScreenState extends State<ResultScreen> {
 
           final type = snapshot.data!;
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                RepaintBoundary(
-                  key: _shareCardKey,
-                  child: _ResultShareCard(type: type),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _handleShare(type),
-                        icon: const Icon(Icons.share),
-                        label: const Text('이미지로 공유'),
-                      ),
+            child: ResponsiveCenter(
+              maxWidth: Responsive.value(context,
+                  mobile: double.infinity, tablet: 640, desktop: 720),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Center(
+                    child: RepaintBoundary(
+                      key: _shareCardKey,
+                      child: _ResultShareCard(type: type),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: () => context.go(AppRoutes.home),
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('다시 테스트하기'),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _handleShare(type),
+                          icon: const Icon(Icons.share),
+                          label: const Text('이미지로 공유'),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                _MatchSection(type: type),
-                const SizedBox(height: 32),
-                PremiumReportBanner(onTap: () {
-                  // TODO: 실제 결제 플로우 연동
-                }),
-                const SizedBox(height: 16),
-                const AdBannerPlaceholder(),
-                const SizedBox(height: 16),
-              ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () => context.go(AppRoutes.home),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('다시 테스트하기'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  _MatchSection(type: type),
+                  const SizedBox(height: 32),
+                  PremiumReportBanner(onTap: () {
+                    // TODO: 실제 결제 플로우 연동
+                  }),
+                  const SizedBox(height: 16),
+                  const AdBannerPlaceholder(),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           );
         },
@@ -148,7 +157,7 @@ class _ResultShareCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: 360,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
@@ -163,7 +172,7 @@ class _ResultShareCard extends StatelessWidget {
           Text(
             'PBTI',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Colors.white70,
+                  color: AppTheme.onGradientText.withValues(alpha: 0.7),
                   letterSpacing: 4,
                 ),
           ),
@@ -171,7 +180,7 @@ class _ResultShareCard extends StatelessWidget {
           Text(
             type.code,
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                  color: Colors.white,
+                  color: AppTheme.onGradientText,
                   fontWeight: FontWeight.w900,
                 ),
           ),
@@ -179,7 +188,7 @@ class _ResultShareCard extends StatelessWidget {
           Text(
             type.name,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
+                  color: AppTheme.onGradientText,
                   fontWeight: FontWeight.bold,
                 ),
           ),
@@ -188,7 +197,7 @@ class _ResultShareCard extends StatelessWidget {
             type.shortDescription,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
+                  color: AppTheme.onGradientText,
                 ),
           ),
           const SizedBox(height: 16),
@@ -198,15 +207,16 @@ class _ResultShareCard extends StatelessWidget {
             alignment: WrapAlignment.center,
             children: type.keywords
                 .map((k) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.25),
+                        color: Colors.white.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         k,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppTheme.onGradientText,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
@@ -242,7 +252,7 @@ class _MatchSection extends StatelessWidget {
           label: '나의 숙적(아치에너미) 정치인',
           politician: type.archenemyPolitician,
           reason: type.archenemyReason,
-          color: Colors.redAccent,
+          color: AppTheme.accent,
         ),
       ],
     );

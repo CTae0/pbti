@@ -26,31 +26,34 @@ class PremiumReportBanner extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.workspace_premium, color: Colors.white, size: 32),
-              SizedBox(width: 12),
+              const Icon(Icons.workspace_premium, color: AppTheme.onGradientText, size: 32),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '심층 정치 성향 프리미엄 리포트',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.onGradientText,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       '나의 투표 성향 예측, 세부 정책 매칭까지 확인해보세요',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                      style: TextStyle(
+                        color: AppTheme.onGradientText.withValues(alpha: 0.75),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.white),
+              const Icon(Icons.chevron_right, color: AppTheme.onGradientText),
             ],
           ),
         ),

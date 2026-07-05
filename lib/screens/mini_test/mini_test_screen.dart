@@ -7,7 +7,9 @@ import '../../models/question.dart';
 import '../../router/app_router.dart';
 import '../../services/question_repository.dart';
 import '../../state/test_session_state.dart';
+import '../../utils/responsive.dart';
 import '../../widgets/ab_choice_card.dart';
+import '../../widgets/demographics_intro.dart';
 import '../../widgets/progress_bar.dart';
 
 class MiniTestScreen extends StatefulWidget {
@@ -72,12 +74,17 @@ class _MiniTestBodyState extends State<_MiniTestBody> {
     final session = context.watch<TestSessionState>();
 
     if (!_sessionStarted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        context.read<TestSessionState>().startSession(TestType.mini, widget.questions);
-        setState(() => _sessionStarted = true);
-      });
-      return const Center(child: CircularProgressIndicator());
+      return DemographicsIntro(
+        onSubmit: (ageGroup, gender) {
+          context.read<TestSessionState>().startSession(
+                TestType.mini,
+                widget.questions,
+                ageGroup: ageGroup,
+                gender: gender,
+              );
+          setState(() => _sessionStarted = true);
+        },
+      );
     }
 
     if (session.isComplete) {
@@ -94,7 +101,8 @@ class _MiniTestBodyState extends State<_MiniTestBody> {
       return const SizedBox.shrink();
     }
 
-    return Padding(
+    return ResponsiveCenter(
+      maxWidth: Responsive.value(context, mobile: double.infinity, tablet: 640, desktop: 560),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../models/question.dart';
 import '../../services/dashboard_repository.dart';
 import '../../state/dashboard_filter_state.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/responsive.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -29,16 +31,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('실시간 여론 대시보드')),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: ResponsiveCenter(
+        maxWidth: Responsive.value(context, mobile: double.infinity, tablet: 900, desktop: 1100),
+        padding: EdgeInsets.all(Responsive.value(context, mobile: 16, tablet: 24, desktop: 32)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SegmentedButton<TestType>(
+              segments: const [
+                ButtonSegment(value: TestType.mini, label: Text('미니 테스트')),
+                ButtonSegment(value: TestType.full, label: Text('상세 테스트')),
+              ],
+              selected: {filter.testType},
+              onSelectionChanged: (selection) => filter.setTestType(selection.first),
+            ),
+            const SizedBox(height: 16),
             _FilterBar(filter: filter),
             const SizedBox(height: 24),
             Expanded(
               child: FutureBuilder<Map<String, int>>(
                 future: _repository.fetchDistribution(
+                  testType: filter.testType,
                   ageGroup: filter.ageGroup,
                   gender: filter.gender,
                 ),

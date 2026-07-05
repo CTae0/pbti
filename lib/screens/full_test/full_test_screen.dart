@@ -7,6 +7,8 @@ import '../../models/question.dart';
 import '../../router/app_router.dart';
 import '../../services/question_repository.dart';
 import '../../state/test_session_state.dart';
+import '../../utils/responsive.dart';
+import '../../widgets/demographics_intro.dart';
 import '../../widgets/likert_scale_selector.dart';
 import '../../widgets/progress_bar.dart';
 
@@ -72,13 +74,17 @@ class _FullTestBodyState extends State<_FullTestBody> {
     final session = context.watch<TestSessionState>();
 
     if (!_sessionStarted) {
-      // build 중 상태 변경을 피하기 위해 다음 프레임에 시작
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        context.read<TestSessionState>().startSession(TestType.full, widget.questions);
-        setState(() => _sessionStarted = true);
-      });
-      return const Center(child: CircularProgressIndicator());
+      return DemographicsIntro(
+        onSubmit: (ageGroup, gender) {
+          context.read<TestSessionState>().startSession(
+                TestType.full,
+                widget.questions,
+                ageGroup: ageGroup,
+                gender: gender,
+              );
+          setState(() => _sessionStarted = true);
+        },
+      );
     }
 
     if (session.isComplete) {
@@ -95,7 +101,8 @@ class _FullTestBodyState extends State<_FullTestBody> {
       return const SizedBox.shrink();
     }
 
-    return Padding(
+    return ResponsiveCenter(
+      maxWidth: Responsive.value(context, mobile: double.infinity, tablet: 640, desktop: 560),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

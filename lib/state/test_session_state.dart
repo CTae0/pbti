@@ -13,6 +13,8 @@ class TestSessionState extends ChangeNotifier {
   TestType? _testType;
   List<Question> _questions = const [];
   int _currentIndex = 0;
+  String? _ageGroup;
+  String? _gender;
 
   /// questionId -> answer
   /// full: 1~5 (5점 척도)
@@ -26,12 +28,21 @@ class TestSessionState extends ChangeNotifier {
       _currentIndex < _questions.length ? _questions[_currentIndex] : null;
   bool get isComplete => _answers.length == _questions.length && _questions.isNotEmpty;
   double get progress => _questions.isEmpty ? 0 : _answers.length / _questions.length;
+  String? get ageGroup => _ageGroup;
+  String? get gender => _gender;
 
-  void startSession(TestType type, List<Question> questions) {
+  void startSession(
+    TestType type,
+    List<Question> questions, {
+    String? ageGroup,
+    String? gender,
+  }) {
     _testType = type;
     _questions = List.unmodifiable(questions);
     _currentIndex = 0;
     _answers.clear();
+    _ageGroup = ageGroup;
+    _gender = gender;
     notifyListeners();
   }
 
@@ -110,6 +121,8 @@ class TestSessionState extends ChangeNotifier {
     _testType = null;
     _questions = const [];
     _currentIndex = 0;
+    _ageGroup = null;
+    _gender = null;
     _answers.clear();
     notifyListeners();
   }
