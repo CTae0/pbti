@@ -23,6 +23,13 @@ class PbtiType {
   final String archenemyReason;
   final String? imageUrl;
 
+  /// 코드 2번째 글자(축2: M=시장/G=정부)에 따라 8유형이 함께 그려진
+  /// 그룹 일러스트 asset 경로를 반환한다.
+  String get groupIllustrationAssetPath {
+    final axis2 = code[1];
+    return 'assets/images/types/${axis2}_test8.png';
+  }
+
   factory PbtiType.fromMap(Map<String, dynamic> map) {
     return PbtiType(
       code: map['code'] as String,

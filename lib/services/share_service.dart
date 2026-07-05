@@ -34,4 +34,9 @@ class ShareService {
       text: shareText,
     );
   }
+
+  /// 이미지 없이 텍스트와 링크만 공유한다.
+  static Future<void> shareText(String text) async {
+    await Share.share(text);
+  }
 }

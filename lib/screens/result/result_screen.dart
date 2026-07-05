@@ -49,17 +49,28 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
-  Future<void> _handleShare(PbtiType type) async {
+  Future<void> _handleShareLink() async {
+    final uri = Uri.base.replace(fragment: AppRoutes.resultPath(widget.resultCode));
     try {
-      await ShareService.shareBoundaryAsImage(
-        boundaryKey: _shareCardKey,
-        fileName: 'pbti_${type.code}.png',
-        shareText: '나의 정치 성향은 [${type.code}] ${type.name}! #PBTI',
-      );
+      await ShareService.shareText('나의 정치 성향은 [${widget.resultCode}]! PBTI로 확인해보세요.\n$uri');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('공유에 실패했습니다: $e')),
+      );
+    }
+  }
+
+  Future<void> _handleSaveImage(PbtiType type) async {
+    try {
+      await ShareService.shareBoundaryAsImage(
+        boundaryKey: _shareCardKey,
+        fileName: 'pbti_${type.code}.png',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('이미지 저장에 실패했습니다: $e')),
       );
     }
   }
@@ -114,23 +125,34 @@ class _ResultScreenState extends State<ResultScreen> {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () => _handleShare(type),
+                          onPressed: _handleShareLink,
                           icon: const Icon(Icons.share),
-                          label: const Text('이미지로 공유'),
+                          label: const Text('공유하기'),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: FilledButton.icon(
-                          onPressed: () => context.go(AppRoutes.home),
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('다시 테스트하기'),
+                        child: OutlinedButton.icon(
+                          onPressed: () => _handleSaveImage(type),
+                          icon: const Icon(Icons.download),
+                          label: const Text('이미지 저장'),
                         ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () => context.go(AppRoutes.home),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('다시 테스트하기'),
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   _MatchSection(type: type),
+                  const SizedBox(height: 32),
+                  _GroupIllustrationSection(type: type),
                   const SizedBox(height: 32),
                   PremiumReportBanner(onTap: () {
                     // TODO: 실제 결제 플로우 연동
@@ -226,6 +248,38 @@ class _ResultShareCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// 결과 유형이 속한 진영(시장 M / 정부 G) 8유형 전체를 보여주는 일러스트 섹션.
+class _GroupIllustrationSection extends StatelessWidget {
+  const _GroupIllustrationSection({required this.type});
+
+  final PbtiType type;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          '${type.code} 유형이 속한 진영',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppTheme.onGradientText,
+              ),
+        ),
+        const SizedBox(height: 12),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.asset(
+            type.groupIllustrationAssetPath,
+            width: double.infinity,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+          ),
+        ),
+      ],
     );
   }
 }
