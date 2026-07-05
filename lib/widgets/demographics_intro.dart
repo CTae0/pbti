@@ -72,7 +72,7 @@ class _DemographicsIntroState extends State<DemographicsIntro> {
                   alignment: WrapAlignment.center,
                   children: [
                     ...DashboardFilterState.ageGroups.map(
-                      (a) => ChoiceChip(
+                      (a) => FilterChip(
                         label: Text(_ageLabels[a] ?? a),
                         selected: _ageChosen && _selectedAge == a,
                         onSelected: (_) => setState(() {
@@ -81,7 +81,7 @@ class _DemographicsIntroState extends State<DemographicsIntro> {
                         }),
                       ),
                     ),
-                    ChoiceChip(
+                    FilterChip(
                       label: const Text('선택 안함'),
                       selected: _ageChosen && _selectedAge == null,
                       onSelected: (_) => setState(() {
@@ -100,7 +100,7 @@ class _DemographicsIntroState extends State<DemographicsIntro> {
                   alignment: WrapAlignment.center,
                   children: DashboardFilterState.genders
                       .map(
-                        (g) => ChoiceChip(
+                        (g) => FilterChip(
                           label: Text(_genderLabels[g] ?? g),
                           selected: _genderChosen && _selectedGender == g,
                           onSelected: (_) => setState(() {
