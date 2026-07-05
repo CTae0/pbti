@@ -33,7 +33,11 @@ class _DemographicsIntroState extends State<DemographicsIntro> {
   };
 
   String? _selectedAge;
-  String _selectedGender = 'unspecified';
+  String? _selectedGender;
+  bool _ageChosen = false;
+  bool _genderChosen = false;
+
+  bool get _canStart => _ageChosen && _genderChosen;
 
   @override
   Widget build(BuildContext context) {
@@ -67,17 +71,23 @@ class _DemographicsIntroState extends State<DemographicsIntro> {
                   runSpacing: 8,
                   alignment: WrapAlignment.center,
                   children: [
-                    ChoiceChip(
-                      label: const Text('선택 안함'),
-                      selected: _selectedAge == null,
-                      onSelected: (_) => setState(() => _selectedAge = null),
-                    ),
                     ...DashboardFilterState.ageGroups.map(
                       (a) => ChoiceChip(
                         label: Text(_ageLabels[a] ?? a),
-                        selected: _selectedAge == a,
-                        onSelected: (_) => setState(() => _selectedAge = a),
+                        selected: _ageChosen && _selectedAge == a,
+                        onSelected: (_) => setState(() {
+                          _selectedAge = a;
+                          _ageChosen = true;
+                        }),
                       ),
+                    ),
+                    ChoiceChip(
+                      label: const Text('선택 안함'),
+                      selected: _ageChosen && _selectedAge == null,
+                      onSelected: (_) => setState(() {
+                        _selectedAge = null;
+                        _ageChosen = true;
+                      }),
                     ),
                   ],
                 ),
@@ -92,8 +102,11 @@ class _DemographicsIntroState extends State<DemographicsIntro> {
                       .map(
                         (g) => ChoiceChip(
                           label: Text(_genderLabels[g] ?? g),
-                          selected: _selectedGender == g,
-                          onSelected: (_) => setState(() => _selectedGender = g),
+                          selected: _genderChosen && _selectedGender == g,
+                          onSelected: (_) => setState(() {
+                            _selectedGender = g;
+                            _genderChosen = true;
+                          }),
                         ),
                       )
                       .toList(),
@@ -102,7 +115,9 @@ class _DemographicsIntroState extends State<DemographicsIntro> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () => widget.onSubmit(_selectedAge, _selectedGender),
+                    onPressed: _canStart
+                        ? () => widget.onSubmit(_selectedAge, _selectedGender)
+                        : null,
                     child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
                       child: Text('시작하기'),
